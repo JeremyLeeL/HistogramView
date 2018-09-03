@@ -7,7 +7,7 @@ Android自定义柱形图
 
 ###自定义属性
 
-(```)
+(''')
         <!--纵坐标单位-->
         <attr name="unit" format="string|reference"/>
         <!--坐标轴颜色-->
@@ -24,4 +24,4 @@ Android自定义柱形图
         <attr name="verticalCount" format="integer"/>
         <!--柱子之间的间隔距离-->
         <attr name="horizontalSpacing" format="dimension"/>
-(```)
+(''')

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.jeremy.lym.histogramview.MainActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="Hello World!"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <com.jeremy.lym.histogramview.HistogramView
+        android:id="@+id/histogramView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        app:axisColor="#222222"
+        app:axisWidth="1dp"
+        app:horizontalSpacing="10dp"
+        app:verticalCount="50"
+        app:verticalUnitCount="5"
+        app:axisTextColor="#2B2B2B"
+        app:pillarsColor="#1175B7"
+        app:unit="单位：%"
+        />
+</LinearLayout>

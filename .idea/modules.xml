@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/HistogramView.iml" filepath="$PROJECT_DIR$/HistogramView.iml" />
+      <module fileurl="file://D:\Jeremy\zujianhua\HistogramView\HistogramView.iml" filepath="D:\Jeremy\zujianhua\HistogramView\HistogramView.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

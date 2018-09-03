@@ -7,7 +7,6 @@ Android自定义柱形图
 
 * 自定义属性
 > <!--纵坐标单位-->
-  <!--纵坐标单位-->
   <attr name="unit" format="string|reference"/>
   <!--坐标轴颜色-->
   <attr name="axisColor" format="color"/>

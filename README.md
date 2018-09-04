@@ -19,6 +19,10 @@ Android自定义柱形图
         <attr name="axisWidth" format="dimension"/>
         <!--柱子颜色-->
         <attr name="pillarsColor" format="color"/>
+        <!--柱子上标注文字颜色-->
+        <attr name="pillarsTextColor" format="color"/>
+        <!--是否显示柱子上标注文字-->
+        <attr name="showPillarsText" format="boolean"/>
         <!--纵坐标单位间隔量（默认5）-->
         <attr name="verticalUnitCount" format="integer"/>
         <!--纵坐标总量（默认100）-->

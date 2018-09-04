@@ -16,6 +16,7 @@ import java.text.DecimalFormat
 
 /**
  * Created by lym on 2018/8/30.
+ * GitHub：https://github.com/JeremyLeeL
  */
 class HistogramView @JvmOverloads constructor(
         context: Context,

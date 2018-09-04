@@ -3,6 +3,8 @@ Android自定义柱形图
 
 ![image](https://github.com/JeremyLeeL/HistogramView/blob/master/histogramView.png)
 
+[ ![Download](https://api.bintray.com/packages/lym6437/AndroidRepository/HistogramView/images/download.svg) ](https://bintray.com/lym6437/AndroidRepository/HistogramView/_latestVersion)
+
 ## 属性及使用说明
 
 * 自定义属性

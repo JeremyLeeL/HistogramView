@@ -37,6 +37,7 @@ class HistogramView @JvmOverloads constructor(
 
     private var staticLayout: StaticLayout? = null
 
+    /**Y坐标单位*/
     private var unit = ""
 
     /**纵坐标到左边界的距离*/

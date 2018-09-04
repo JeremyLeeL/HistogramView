@@ -12,6 +12,7 @@ import android.text.StaticLayout
 import android.text.TextPaint
 import android.util.AttributeSet
 import android.view.View
+import java.text.DecimalFormat
 
 /**
  * Created by lym on 2018/8/30.
@@ -23,10 +24,12 @@ class HistogramView @JvmOverloads constructor(
 
     /**画线*/
     private val linePaint = Paint()
-    /**画文字*/
-    private val textPaint = TextPaint()
+    /**画坐标轴文字*/
+    private val axisTextPaint = TextPaint()
     /**画柱子*/
     private val pillarsPaint = Paint()
+    /**画柱子上标注文字*/
+    private val pillarsTextPaint by lazy { Paint() }
 
     /**柱子的宽度*/
     private var pillarsWidth = 0f
@@ -71,11 +74,18 @@ class HistogramView @JvmOverloads constructor(
     /**单个柱子代表的数量集合*/
     private var pillarsNumbers: ArrayList<Float>? = null
 
+    /**是否显示柱子上标注文字*/
+    private var showPillarsText = true
+
+    //保留两位小数
+    private val df = DecimalFormat("#.00")
     init {
         val typeArray = context.obtainStyledAttributes(attributeSet, R.styleable.HistogramView, 0, 0)
         unit = typeArray.getString(R.styleable.HistogramView_unit) ?: ""
         val axisColor = typeArray.getColor(R.styleable.HistogramView_axisColor, Color.DKGRAY)
         val axisTextColor = typeArray.getColor(R.styleable.HistogramView_axisTextColor, Color.DKGRAY)
+        val pillarsTextColor = typeArray.getColor(R.styleable.HistogramView_pillarsTextColor, Color.DKGRAY)
+        showPillarsText = typeArray.getBoolean(R.styleable.HistogramView_showPillarsText, true)
         axisWidth = typeArray.getDimension(R.styleable.HistogramView_axisWidth, 2f)
         val pillarsColor = typeArray.getColor(R.styleable.HistogramView_pillarsColor, Color.GREEN)
         verticalUnitCount = typeArray.getInteger(R.styleable.HistogramView_verticalUnitCount, 5)
@@ -90,8 +100,13 @@ class HistogramView @JvmOverloads constructor(
         linePaint.isAntiAlias = true
         linePaint.strokeWidth = axisWidth
 
-        textPaint.color = axisTextColor
-        textPaint.textAlign = Paint.Align.CENTER    //设置align为center之后根据text的width确定startX绘制文字width需要 /2
+        axisTextPaint.color = axisTextColor
+        axisTextPaint.textAlign = Paint.Align.CENTER    //设置align为center之后根据text的width确定startX绘制文字width需要 /2
+
+        if (showPillarsText) {
+            pillarsTextPaint.color = pillarsTextColor
+            pillarsTextPaint.textAlign = Paint.Align.CENTER
+        }
 
         pillarsPaint.color = pillarsColor
     }
@@ -122,33 +137,50 @@ class HistogramView @JvmOverloads constructor(
                 canvas.drawLine(0f - axisWidth / 2, -startY,
                         0 - verticalLongLineLength - axisWidth / 2, -startY, linePaint)
 
-                val rect = getTextBounds(i.toString(), textPaint)
+                val rect = getTextBounds(i.toString(), axisTextPaint)
                 canvas.drawText(i.toString(),
                         0f - rect.width() / 2 - 10 - verticalLongLineLength - axisWidth / 2,
-                        -startY + rect.height() / 2, textPaint)
+                        -startY + rect.height() / 2, axisTextPaint)
 
                 startY += verticalSpacing * verticalUnitCount
             }else if(i == verticalCount + 1){
-                val rect = getTextBounds(unit, textPaint)
+                val rect = getTextBounds(unit, axisTextPaint)
                 canvas.drawText(unit,
                         0f - rect.width() / 2 - 10 - verticalLongLineLength - axisWidth / 2,
-                        -startY, textPaint)
+                        -startY, axisTextPaint)
             }else{
                 continue
             }
         }
-        //画柱子 和柱子下的文字
+        //画柱子 和柱子上下的文字
         for (i in 1 .. xAxisStrings!!.size){
             if (pillarsNumbers!!.size < i)
                 return
+            //柱子的right点（X坐标）
             val endX = (pillarsWidth + horizontalSpacing) * i
-            canvas.drawRect(endX - pillarsWidth, -pillarsNumbers!![i - 1] * verticalSpacing, endX, -axisWidth / 2, pillarsPaint)
+            //柱子的center点（x坐标）
             val centerX = endX - pillarsWidth / 2
+            //柱子的top点（Y坐标）
+            val pillarsY = -pillarsNumbers!![i - 1] * verticalSpacing
+            if (showPillarsText){
+                //绘制柱子上标注文字
+                var text = pillarsNumbers!![i - 1].toString()
+                var needFormat = false
+                if (text.contains(".")){
+                    text = text.substring(text.indexOf(".") + 1, text.length)
+                    needFormat = text.length > 2
+                }
+                text = if (needFormat) (df.format(pillarsNumbers!![i - 1])).toString() else (pillarsNumbers!![i - 1]).toString()
+                canvas.drawText(text, centerX, pillarsY - rect.height() / 2, pillarsTextPaint)
+            }
+            //绘制柱子
+            canvas.drawRect(endX - pillarsWidth, pillarsY, endX, -axisWidth / 2, pillarsPaint)
             val str = xAxisStrings!![i - 1]
             canvas.save()
             canvas.translate(centerX, 0f + axisWidth / 2)
             if (staticLayout == null)
-                staticLayout = StaticLayout(str, textPaint, pillarsWidth.toInt() + horizontalSpacing.toInt(),
+                //绘制X轴标注文字
+                staticLayout = StaticLayout(str, axisTextPaint, pillarsWidth.toInt() + horizontalSpacing.toInt(),
                         Layout.Alignment.ALIGN_NORMAL, 1f, 1f, false)
             staticLayout?.draw(canvas)
             staticLayout = null
@@ -164,10 +196,13 @@ class HistogramView @JvmOverloads constructor(
 
     /**参数设置*/
     private fun setParam(){
-        textPaint.textSize = width / 35f
+        val textSize = width / 35f
+        if (showPillarsText)
+            pillarsTextPaint.textSize = textSize
         //设置完文字size之后测量文字的规格（包含宽高等信息的rect）
-        val unitWidth = getTextBounds(unit, textPaint).width()
-        val countWidth = getTextBounds(verticalCount.toString(), textPaint).width()
+        axisTextPaint.textSize = textSize
+        val unitWidth = getTextBounds(unit, axisTextPaint).width()
+        val countWidth = getTextBounds(verticalCount.toString(), axisTextPaint).width()
         val leftTextWidth = Math.max(unitWidth, countWidth)
         //设置坐标轴到左侧边界间距
         leftSpacing = leftTextWidth + verticalLongLineLength + axisWidth / 2 + 30
@@ -195,12 +230,12 @@ class HistogramView @JvmOverloads constructor(
     /**设置文字颜色*/
     fun setTextColor(@ColorRes colorRes: Int){
         val color = context.resources.getColor(colorRes)
-        textPaint.color = color
+        axisTextPaint.color = color
         invalidate()
     }
     fun setTextColor(colorStr: String){
         val color = Color.parseColor(colorStr)
-        textPaint.color = color
+        axisTextPaint.color = color
         invalidate()
     }
 
@@ -269,6 +304,22 @@ class HistogramView @JvmOverloads constructor(
     }
     fun setUnit(@StringRes unitStrId: Int){
         this.unit = context.getString(unitStrId) ?: ""
+    }
+
+    /**设置是否显示柱子上标注文字*/
+    fun setShowPillarsText(showPillarsText: Boolean){
+        this.showPillarsText = showPillarsText
+        invalidate()
+    }
+
+    /**设置柱子上标注文字颜色*/
+    fun setPillarsTextColor(@ColorRes colorRes: Int){
+        pillarsTextPaint.color = context.resources.getColor(colorRes)
+        invalidate()
+    }
+    fun setPillarsTextColor(colorStr: String){
+        pillarsTextPaint.color = Color.parseColor(colorStr)
+        invalidate()
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {

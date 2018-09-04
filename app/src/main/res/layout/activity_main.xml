@@ -29,5 +29,6 @@
         app:axisTextColor="#2B2B2B"
         app:pillarsColor="#1175B7"
         app:unit="单位：%"
+        app:showPillarsText="true"
         />
 </LinearLayout>

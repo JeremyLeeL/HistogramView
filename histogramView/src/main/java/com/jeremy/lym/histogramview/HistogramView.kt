@@ -215,6 +215,21 @@ class HistogramView @JvmOverloads constructor(
         verticalSpacing = (height - bottomSpacing - rect.height() * 4) / verticalCount
     }
 
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        var sizeWidth = MeasureSpec.getSize(widthMeasureSpec)
+        var sizeHeight = MeasureSpec.getSize(heightMeasureSpec)
+        val modeWith = MeasureSpec.getMode(widthMeasureSpec)
+        val modeHeight = MeasureSpec.getMode(heightMeasureSpec)
+
+        //为当前控件设置默认宽高
+        if (modeWith != MeasureSpec.EXACTLY)
+            sizeWidth = 300
+        if (modeHeight != MeasureSpec.EXACTLY)
+            sizeHeight = 300
+        setMeasuredDimension(sizeWidth, sizeHeight)
+    }
+
     /**坐标轴颜色*/
     fun setAxisLineColor(@ColorRes colorRes: Int){
         val color = context.resources.getColor(colorRes)
@@ -320,20 +335,5 @@ class HistogramView @JvmOverloads constructor(
     fun setPillarsTextColor(colorStr: String){
         pillarsTextPaint.color = Color.parseColor(colorStr)
         invalidate()
-    }
-
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        var sizeWidth = MeasureSpec.getSize(widthMeasureSpec)
-        var sizeHeight = MeasureSpec.getSize(heightMeasureSpec)
-        val modeWith = MeasureSpec.getMode(widthMeasureSpec)
-        val modeHeight = MeasureSpec.getMode(heightMeasureSpec)
-
-        //为当前控件设置默认宽高
-        if (modeWith != MeasureSpec.EXACTLY)
-            sizeWidth = 300
-        if (modeHeight != MeasureSpec.EXACTLY)
-            sizeHeight = 300
-        setMeasuredDimension(sizeWidth, sizeHeight)
     }
 }
